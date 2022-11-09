@@ -27,12 +27,37 @@ async function run(){
         // }
         // const result = await newDB.insertOne(doc);
         // console.log(result)
+    app.get('/service', async(req, res) => {
+        const query = {}
+        const cursor = newDB.find(query).limit(3)
+        const services = await cursor.toArray()
+        res.send(services)
+    })
     app.get('/services', async(req, res) => {
         const query = {}
         const cursor = newDB.find(query)
         const services = await cursor.toArray()
         res.send(services)
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     app.get('/services/:id', async(req, res) => {
         const id = req.params.id;
