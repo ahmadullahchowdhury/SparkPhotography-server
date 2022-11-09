@@ -78,10 +78,9 @@ async function run(){
     })
     
 
-    app.post('/orders', async(req, res) => {
-        const order = req.body;
-        // console.log(order);
-        const result = await orderCollection.insertOne(order);
+    app.post('/reviews', async(req, res) => {
+        const review = req.body;
+        const result = await reviewCollection.insertOne(review);
         res.send(result);
     });
 
