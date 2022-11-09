@@ -19,6 +19,7 @@ async function run(){
     try{
         const newDB = client.db("insertDB").collection('doc')
         const orderCollection = client.db('insertDB').collection('orders');
+        const reviewCollection = client.db('insertDB').collection('reviews');
         // const haiku = newDB.collection("haiku");
         // create a document to insert
         // const doc = {
@@ -27,12 +28,16 @@ async function run(){
         // }
         // const result = await newDB.insertOne(doc);
         // console.log(result)
+
+
+        //limiting first 3
     app.get('/service', async(req, res) => {
         const query = {}
         const cursor = newDB.find(query).limit(3)
         const services = await cursor.toArray()
         res.send(services)
     })
+    //sending all data
     app.get('/services', async(req, res) => {
         const query = {}
         const cursor = newDB.find(query)
@@ -40,31 +45,30 @@ async function run(){
         res.send(services)
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
+    // sending id specific data
     app.get('/services/:id', async(req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id)}
         const service = await newDB.findOne(query)
         res.send(service)
     })
+
+//getting all reviews
+    app.get('/reviews', async(req, res) => {
+        const query = {}
+        const cursor = reviewCollection.find(query)
+        const reviews = await cursor.toArray()
+        res.send(reviews)
+    })
+
+
+
+
+
+
+
+
+
     
     app.get('/orders', async(req, res) => {
         const query = {}
