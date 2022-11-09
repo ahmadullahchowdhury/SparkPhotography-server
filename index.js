@@ -33,7 +33,7 @@ async function run(){
         //limiting first 3
     app.get('/service', async(req, res) => {
         const query = {}
-        const cursor = newDB.find(query).limit(3)
+        const cursor = newDB.find(query).limit(3).sort({_id:-1})
         const services = await cursor.toArray()
         res.send(services)
     })
@@ -56,7 +56,7 @@ async function run(){
 //getting all reviews
     app.get('/reviews', async(req, res) => {
         const query = {}
-        const cursor = reviewCollection.find(query)
+        const cursor = reviewCollection.find(query).sort({_id:-1})
         const reviews = await cursor.toArray()
         res.send(reviews)
     })
