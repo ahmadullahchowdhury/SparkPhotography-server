@@ -20,17 +20,10 @@ async function run(){
         const newDB = client.db("insertDB").collection('doc')
         const orderCollection = client.db('insertDB').collection('orders');
         const reviewCollection = client.db('insertDB').collection('reviews');
-        // const haiku = newDB.collection("haiku");
-        // create a document to insert
-        // const doc = {
-        //   title: "Record tor madfaasdf  of a Shriveled Datum",
-        //   content: "No bytes, no problem. Just insert a document, in MongoDB",
-        // }
-        // const result = await newDB.insertOne(doc);
-        // console.log(result)
 
 
-        //limiting first 3
+
+        //limiting last 3
     app.get('/service', async(req, res) => {
         const query = {}
         const cursor = newDB.find(query).limit(3).sort({_id:-1})
@@ -53,6 +46,15 @@ async function run(){
         res.send(service)
     })
 
+    // user adding service code 
+    app.post('/services', async(req, res) => {
+        const addService = req.body;
+        const result = await newDB.insertOne(addService);
+        res.send(result);
+    });
+
+
+
 //getting all reviews
     app.get('/reviews', async(req, res) => {
         const query = {}
@@ -62,27 +64,16 @@ async function run(){
     })
 
 
-
-
-
-
-
-
-
     
-    app.get('/orders', async(req, res) => {
-        const query = {}
-        const cursor = orderCollection.find(query)
-        const orders = await cursor.toArray()
-        res.send(orders)
-    })
-    
+    //user posting review code
 
     app.post('/reviews', async(req, res) => {
         const review = req.body;
         const result = await reviewCollection.insertOne(review);
         res.send(result);
     });
+
+    //user review delete code
 
     app.delete('/reviews/:id', async(req, res) => {
         const id = req.params.id;
@@ -91,13 +82,15 @@ async function run(){
         res.send(result)
  
     })
-    // app.delete('/orders/:id', async(req, res) => {
-    //     const id = req.params.id;
-    //     const query = { _id: ObjectId(id)}
-    //     const result = await orderCollection.deleteOne(query)
-    //     res.send(result)
-    //     // console.log(id)
-    // })
+
+
+
+
+
+
+
+
+
 
 
 
