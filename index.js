@@ -83,6 +83,16 @@ async function run(){
  
     })
 
+    //sending single reviews with _id for updating review
+
+    app.get('/reviews/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id)}
+        // const cursor = orderCollection.findOne(query)
+        const review = await reviewCollection.findOne(query)
+        res.send(review)
+    })
+
 
 
 
