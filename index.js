@@ -18,7 +18,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         const newDB = client.db("insertDB").collection('doc')
-        const orderCollection = client.db('insertDB').collection('orders');
         const reviewCollection = client.db('insertDB').collection('reviews');
 
 
@@ -93,6 +92,8 @@ async function run(){
         res.send(review)
     })
 
+    // updating review with put method
+
     app.put('/reviews/:id' , async(req, res) => {
         const id = req.params.id
         const query = { _id: ObjectId(id)}
@@ -118,29 +119,7 @@ async function run(){
 
 
 
-    //update email
-    app.get('/orders/:id', async(req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id)}
-        // const cursor = orderCollection.findOne(query)
-        const order = await orderCollection.findOne(query)
-        res.send(order)
-    })
 
-    app.put('/orders/:id' , async(req, res) => {
-        const id = req.params.id
-        const query = { _id: ObjectId(id)}
-        const email = req.body;
-        console.log(email)
-        const option = {upsert: true}
-        const updatedEmail = {
-            $set : {
-                email: email.email
-            }
-        }
-        const result = await orderCollection.updateOne(query, updatedEmail, option)
-        res.send(result)
-    })
 
     
 
