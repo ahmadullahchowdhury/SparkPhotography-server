@@ -4,7 +4,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { application } = require('express');
+const { application, query } = require('express');
+const jwt = require('jsonwebtoken');
 
 app.use(cors())
 app.use(express.json())
@@ -14,11 +15,31 @@ const uri = `mongodb+srv://${ process.env.DB_user}:${ process.env.DB_password}@c
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+function verifyJWT(req, res, next){
+    console.log(req.headers.authorization)
+    const authHeader = req.headers.authorization
+    // console.log(authHeader);
+    if(!authHeader){
+        return res.status(401).send('ki bepar lukiye lukiya asa? huh tomake tho eikhane jete dibo na')
+    }
+
+    const token = authHeader.split(' ')[1];
+    // console.log(token)
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded){
+        if(err){
+            return res.status(403).send({message: "forbidden access"})
+        }
+        req.decoded = decoded
+        next()
+    })
+}
 
 async function run(){
     try{
         const newDB = client.db("insertDB").collection('doc')
         const reviewCollection = client.db('insertDB').collection('reviews');
+        const usersCollection = client.db('insertDB').collection('users');
 
 
 
@@ -55,9 +76,17 @@ async function run(){
 
 
 //getting all reviews
-    app.get('/reviews', async(req, res) => {
+    app.get('/reviews', verifyJWT,   async(req, res) => {
         const query = {}
-        const cursor = reviewCollection.find(query).sort({_id:-1})
+        // const email = req.query.email
+        const email = req.query.email;
+        const decodedEmail = req.decoded.email
+        if(email !== decodedEmail){
+            return res.status(403).send({message: 'forbiddennnnn  access'})
+        }
+        
+        const query1 = { email: email}
+        const cursor = reviewCollection.find(query1)
         const reviews = await cursor.toArray()
         res.send(reviews)
     })
@@ -107,6 +136,36 @@ async function run(){
         const result = await reviewCollection.updateOne(query, updatedReview, option)
         res.send(result)
     })
+
+
+    app.get('/users', async(req, res) => {
+        const query = {}
+        const cursor = usersCollection.find(query)
+        const user = await cursor.toArray()
+        res.send(user)
+    })
+
+
+    app.post('/users', async(req, res) => {
+        const addUser = req.body;
+        const result = await usersCollection.insertOne(addUser);
+        res.send(result);
+    });
+
+    app.get('/jwt', async(req, res) => {
+        const email = req.query.email;
+        const query = {email: email}
+        const user = await usersCollection.findOne(query)
+        if(user){
+            const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn : '1h'} )
+            return res.send({accessToken: token})
+
+        }
+        res.status(403).send({accessToken: ''})
+    })
+
+
+
 
 
 
